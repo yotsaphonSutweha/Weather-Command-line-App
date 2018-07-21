@@ -7,24 +7,29 @@ const displayMessage = (currentTemp) => {
 }
 
 const getWeather = (city) => {
-    const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=78420792cdac464da286f5052d2ce008`;
-    const request = https.get(url, response => {
-        let body = "";
-        // Heppens when data stream is started
-        response.on('data', data => {
-            // Read the data
-            body += data.toString();
-        });
+    try {
+        const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=78420792cdac464da286f5052d2ce008`;
+        const request = https.get(url, response => {
+            let body = "";
+            // Heppens when data stream is started
+            response.on('data', data => {
+                // Read the data
+                body += data.toString();
+            });
 
-        // End stream
-        response.on('end', () => {
-            // Parsing to JSON
-            let weather = "";
-            weather = JSON.parse(body);
-            // Print out message 
-            displayMessage(weather.main.temp);
+            // End stream
+            response.on('end', () => {
+                // Parsing to JSON
+                let weather = "";
+                weather = JSON.parse(body);
+                // Print out message 
+                displayMessage(weather.main.temp);
+            });
         });
-    });
+    request.on('error', error => console.error(`Error with request: ${error.message}`));
+    } catch(error) {
+        console.log(error.message);
+    }
 }
 
 let city = process.argv.slice(2);
